@@ -64,19 +64,59 @@ for (df in boyNames) {
   boyNames[[x]] <- df
 }
 
-boyNames 
+boyNames <- map(boyNames, drop_na)
 
-map(boyNames, drop_na)
-
-# bayNames <- boyNames[c(3,1,4,2)]
-# 
-# names(boyNames[[1]][1]) <- ""
-# 
-boyNames[[1]]<- boyNames[[1]][,c(3,1,4,2)]
-boyNames[[1]]
+names(boyNames[[1]]) <- c("Name", "Count", "Name1", "Count1")
 
 
 
+for (x in 1:length(boyNames)) {
+  names(boyNames[[x]]) <- c("Name", "Count", "Name1", "Count1")
+}
+
+boyNames
+
+bind_rows(select(boyNames[[20]], "Name", "Count"),
+        select(boyNames[[20]], "Name" = "Name1", "Count" ="Count1"))
+
+length(boyNames)
+
+stacked.boy.names <- NULL
+
+for (x in 1:length(boyNames)) {
+  stacked.boy.names[[x]] <- bind_rows(select(boyNames[[x]], Name, Count), select(boyNames[[x]], Name = Name1, Count =Count1))
+}
+
+stacked.boy.names
+
+glimpse(head(stacked.boy.names))
+
+yearvec <- c(1996:2015)
+
+names(stacked.boy.names) <- yearvec
+
+stacked.boy.names
+
+# stacked.boy.names[[1]] <- mutate(stacked.boy.names[[1]], Year = names(stacked.boy.names)[1])
+
+for (x in 1:length(stacked.boy.names)){
+  stacked.boy.names[[x]] <- mutate(stacked.boy.names[[x]], Year = as.integer(names(stacked.boy.names)[x]))
+  
+}
+
+stacked.boy.names
+
+
+big.data.names <- bind_rows(stacked.boy.names)
+
+glimpse(big.data.names)
+
+jack <- filter(big.data.names, Name == "JACK")
+
+ggplot(jack, aes(x = Year, y = Count)) +  geom_line() +  ggtitle("Popularity of \"Jack\", over time")
+
+
+filter(big.data.names, Count == max(big.data.names$Count))
 
 
 
